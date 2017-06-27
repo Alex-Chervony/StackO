@@ -1,0 +1,16 @@
+UserName, UserPassword, AppVersion, UserId, UUID, AppId, Latitude, Longitude
+UserId, UUID
+UserId, UUID
+UserId, UUID
+UserId, UUID
+UserId, UUID
+SessionId, StatusId, UserId, UUID
+RoomId, Rows, Columns, SeatsRemoved, UserId, UUID
+SessionId, UserId, UUID
+QueryId, UserId, UUID
+SessionId, SeatIdList, StudentIdList, StatusId, UserId, UUID
+RoomId, UserId, UUID
+SessionId, UserId, UUID
+SessionId, UserId, UUID
+SessionId, UserId, UUID
+MessageType, MessageContent, SenderId, ReceiverId

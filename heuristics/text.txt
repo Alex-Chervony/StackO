@@ -1,0 +1,25 @@
+I want to add to the point made by Arne Van Den Kerchove - Normalization.
+
+I would suggest another layer that:   
+1: Defines the new Heuristic direction: If optimal A,B,C differ in their direction, e.g. optimal A is low, but optimal B is high. This heuristic is the positive square root of the squares of the normalized factors.
+2: Will allow to incorporate user response based on the amount of attention (weight) the user assigns to each metrics.
+H = sqrt(
+		alpha(
+			((A - min(A))/(max(A) - min(A)))^2
+		) + 
+		beta(
+			((B - min(B))/(max(B) - min(B)))^2
+		) + 
+		gamma(
+			((C - min(C))/(max(C) - min(C)))^2
+		)
+)
+Alpha, beta and gamma are weights and will start as [1,1,1] unless you have a knowledge that one of the metrics is preferred.
+These weights shall change per each user response.
+For example, if a user chooses something that ranks as follows: 
+	Max(A)= 100 :		21 out of 100  in A - relative value is 0.21
+	Max(B)= 10,000 :	1234 out of 10,000 in B - relative value is 0.1234
+	Max(C)= 1 : 		0.2 out of 1 in C - relative value is 0.2
+	Where all minima are 0.
+You can add a fraction of the difference between the relative values to alpha, beta and gamma respectively. This way you will have a dynamic rating that not only calculates the factors as you already do, but also adjusts to what the user cares about.
+For the example above, alpha, beta and gamma will be 1.0322,0.9456,1.0222 respectively. (Subtract the average from the relative and add the result to the initial set) and the new most relevant item set will be dictated by the user's cumulative choices.
