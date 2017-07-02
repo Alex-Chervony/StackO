@@ -1,0 +1,23 @@
+I think you are describing a classification problem ("suprevised clustering") rather than clustering.  
+
+It seems that each group can have 4-10 rows associated with it, and your operators already provided you with a sample, please confirm. If so, this is your training set, 
+
+> operators clustering the data by hand - into small groups of 4 to 10 entries each  
+
+I suppose you have 700 rows with 120 columns, half of which are categorical:
+> ...dataset of around 700 entries and 120 dimensions which has been
+> clustered into around 200 groups. The dataset is a mix of categorical
+> and ordinal features, split roughly into half.
+
+If you have a limitation of 4-10 items per group, (class/cluster ?) AFIK, a regular classification algorithm will not work OOTB. Are the groups of 4-10 similar to each other? 
+E.g: 
+	- Each row is a customer.
+	- Your operators are segmenting them by DMA. (120 columns)
+	- The limitation of 10 rows is because agents can only process 4-10, but actually the groups are larger and are divided manually.
+
+If so, you can do classification (E.g. Random forest to more easily deal with categorical data) by DMA and then divide the classified groups into easily digestable sets. (You can run another layer of classification to divide). 
+Can you run classification (E.g. Random forest, using the c).
+
+> are there methods to learn the distance metric
+
+If you want to, you can use the training set and calculate it.
