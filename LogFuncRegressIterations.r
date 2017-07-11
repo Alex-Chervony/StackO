@@ -8,7 +8,7 @@ library(XLConnect)
 #### Prepare frq data ####
 MaxFreq=26  
 
-DailyFRQ = readWorksheet(loadWorkbook("Name.xlsx"), sheet="Value TM_Q217_EL_MidFunnel")
+DailyFRQ = readWorksheet(loadWorkbook("Name.xlsx"), sheet="tabname")
 DataMat <- as.matrix(cbind(FRQ=DailyFRQ$impexmax,CostPerAggConversion=DailyFRQ$CostPerConversion))
 # Set dependent var.
 y <- as.matrix(DataMat[,2])[2:(MaxFreq+1)]
