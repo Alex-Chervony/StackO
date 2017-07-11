@@ -9,7 +9,7 @@ library(XLConnect)
 MaxFreq=26  
 
 DailyFRQ = readWorksheet(loadWorkbook("Name.xlsx"), sheet="tabname")
-DataMat <- as.matrix(cbind(FRQ=DailyFRQ$impexmax,CostPerAggConversion=DailyFRQ$CostPerConversion))
+DataMat <- as.matrix(cbind(FRQ=DailyFRQ$maxImp,CostPerAggConversion=DailyFRQ$cpc))
 # Set dependent var.
 y <- as.matrix(DataMat[,2])[2:(MaxFreq+1)]
 # Remove dependent var from data.
