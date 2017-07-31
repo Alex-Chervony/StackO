@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+#https://stackoverflow.com/questions/45357547/outliers-in-works-schedule
 import random
 import pandas as pd
 import numpy as np
@@ -59,16 +60,18 @@ argdict_current={
 	,"sigOut":SampleDF['TimeOut'].var()
 	,"percentile":scipy.stats.norm.ppf(1-OutlierSensitivity)
 }
-Outlier_in=argdict_current['ExpIn']+argdict_current['percentile']*argdict_current['sigIn']
-Outlier_Out=argdict_current['ExpOut']-argdict_current['percentile']*argdict_current['sigOut']
-print(Outlier_in)
-print(Outlier_Out)
+OutlierIn=argdict_current['ExpIn']+argdict_current['percentile']*argdict_current['sigIn']
+OutlierOut=argdict_current['ExpOut']-argdict_current['percentile']*argdict_current['sigOut']
+print(OutlierIn)
+print(OutlierOut)
 #pp.pprint(SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1))
 Outliers=SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1)
-Outliers=Outliers.unique()[~np.isnan(Outliers.unique())]
+Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
 pp.pprint(argdict_current)
 pp.pprint(Outliers)
-pp.pprint(SampleDF.loc[SampleDF['EmployeeID'].isin(Outliers)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
+#pp.pprint(SampleDF.loc[SampleDF['EmployeeID'].isin(Outliers)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
+#pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) or (SampleDF['TimeOut']<OutlierOut)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
+pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)].sort_values(["EmployeeID"]))
 #pp.pprint(SampleDF['TimeIn'].mode().mean().round(1))
 #pp.pprint(SampleDF['TimeIn'])
 # For all
