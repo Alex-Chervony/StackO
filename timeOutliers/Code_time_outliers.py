@@ -17,20 +17,21 @@ TimeInExpected=8.5 # 8:30am
 TimeOutExpected=17 # 5pm
 sig=1 # 1 hour variance
 Employees=10
-SampleSize=300
+SampleSize=500
+Accuracy=1 # Each hour is segmented by hour tenth (6 minutes)
 
-SampleDF2=pd.DataFrame([
+SampleDF=pd.DataFrame([
 	np.random.randint(1,Employees,size=(SampleSize)),
-	np.around(np.random.normal(TimeInExpected, sig,size=(SampleSize)),2),
-	np.around(np.random.normal(TimeOutExpected, sig,size=(SampleSize)),2)
+	np.around(np.random.normal(TimeInExpected, sig,size=(SampleSize)),Accuracy),
+	np.around(np.random.normal(TimeOutExpected, sig,size=(SampleSize)),Accuracy)
 	]).T
-SampleDF2.columns = ['EmployeeID', 'TimeIn','TimeOut']
+SampleDF.columns = ['EmployeeID', 'TimeIn','TimeOut']
 
 # Show Time distributions
-#pp.pprint(SampleDF2)
+pp.pprint(SampleDF)
 
-plt.hist(SampleDF2['TimeIn'],rwidth=0.5,range=(0,24))
-plt.hist(SampleDF2['TimeOut'],rwidth=0.5,range=(0,24))
+plt.hist(SampleDF['TimeIn'],rwidth=0.5,range=(0,24))
+plt.hist(SampleDF['TimeOut'],rwidth=0.5,range=(0,24))
 plt.xticks(np.arange(0,24, 1.0))
 plt.xlabel('Hour of day')
 plt.ylabel('Arrival / Departure Time Frequency')
@@ -38,9 +39,19 @@ plt.show()
 #Create Sample Data #Create Sample Data #Create Sample Data #Create Sample Data 
 
 # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data 
-# Use mode - (common number) + 1.96 standard deviation - 
-#pp.pprint(SampleDF2['TimeIn'])
-scipy.stats.norm(0, 1).cdf(0.95)
+OutlierSensitivity=0.05 # Will catch extreme events that happen 5% of the time. - one sided! i.e. only late arrivals and early departures.
+sensitivity_percentile=scipy.stats.norm.ppf(1-OutlierSensitivity)
 
+# Identify one sided outlier: only late arrivals and early departures.
+def detect_outlier(obs,ExpIn,ExpOut,sigIn,sigOut,percentile):
+	# If Time In is later than expected + 95%
+	if ((obs['TimeIn']>ExpIn+percentile*sigIn) 
+	# If Time Out is earlier than expected - 95%
+		or (obs['TimeOut']<ExpOut-percentile*sigOut)):
+		return(obs['EmployeeID'])
 
-# Use 95% percentil of the normal distribution:
+# Use mode - (common number) + 95% percentile of the normal distribution:
+pp.pprint(SampleDF.mode())
+#pp.pprint(SampleDF['TimeIn'])
+# For all
+# For each
