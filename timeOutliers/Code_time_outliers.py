@@ -21,15 +21,16 @@ SampleSize=300
 SampleDF=pd.DataFrame([[np.random.randint(1,Employees),np.random.normal(TimeInExpected, sig),np.random.normal(TimeOutExpected, sig)] for id in range(1,SampleSize,1)])
 
 SampleDF2=pd.DataFrame([
-	np.random.randint(1,Employees,size=(1,SampleSize,1)),
-	np.random.normal(TimeInExpected, sig,size=(1,SampleSize,1)),
-	np.random.normal(TimeOutExpected, sig,size=(1,SampleSize,1))
-])
+	np.random.randint(1,Employees,size=(SampleSize)),
+	np.around(np.random.normal(TimeInExpected, sig,size=(SampleSize)),2),
+	np.random.normal(TimeOutExpected, sig,size=(SampleSize))
+	]).T
 SampleDF.columns = ['EmployeeID', 'TimeIn','TimeOut']
 SampleDF2.columns = ['EmployeeID', 'TimeIn','TimeOut']
 
 # Show Time distributions
-pp.pprint(SampleDF)
+#pp.pprint(SampleDF)
+pp.pprint(SampleDF2)
 
 plt.hist(SampleDF['TimeIn'],rwidth=0.5,range=(0,24))
 plt.hist(SampleDF['TimeOut'],rwidth=0.5,range=(0,24))
