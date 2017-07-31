@@ -39,19 +39,36 @@ plt.ylabel('Arrival / Departure Time Frequency')
 
 # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data 
 OutlierSensitivity=0.05 # Will catch extreme events that happen 5% of the time. - one sided! i.e. only late arrivals and early departures.
-sensitivity_percentile=scipy.stats.norm.ppf(1-OutlierSensitivity)
 
 # Identify one sided outlier: only late arrivals and early departures.
-def detect_outlier(obs,ExpIn,ExpOut,sigIn,sigOut,percentile):
+def detect_outlier(obs,argdict):
+	#ExpIn,ExpOut,sigIn,sigOut,percentile
 	# If Time In is later than expected + 95%
-	if ((obs['TimeIn']>ExpIn+percentile*sigIn) 
+	if ((obs['TimeIn']>argdict['ExpIn']+argdict['percentile']*argdict['sigIn']) 
 	# If Time Out is earlier than expected - 95%
-		or (obs['TimeOut']<ExpOut-percentile*sigOut)):
+		or (obs['TimeOut']<argdict['ExpOut']-argdict['percentile']*argdict['sigOut'])):
 		return(obs['EmployeeID'])
 
 # Use mode - (common number) + 95% percentile of the normal distribution:
-ExpectedTimeIn=SampleDF['TimeIn'].mode().mean().round(1)
-ExpectedTimeOut=SampleDF['TimeOut'].mode().mean().round(1)
+#ExpectedTimeIn=SampleDF['TimeIn'].mode().mean().round(1)
+#ExpectedTimeOut=SampleDF['TimeOut'].mode().mean().round(1)
+argdict_current={
+	"ExpIn":SampleDF['TimeIn'].mode().mean().round(1)
+	,"ExpOut":SampleDF['TimeOut'].mode().mean().round(1)
+	,"sigIn":SampleDF['TimeIn'].var()
+	,"sigOut":SampleDF['TimeOut'].var()
+	,"percentile":scipy.stats.norm.ppf(1-OutlierSensitivity)
+}
+Outlier_in=argdict_current['ExpIn']+argdict_current['percentile']*argdict_current['sigIn']
+Outlier_Out=argdict_current['ExpOut']-argdict_current['percentile']*argdict_current['sigOut']
+print(Outlier_in)
+print(Outlier_Out)
+#pp.pprint(SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1))
+Outliers=SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1)
+Outliers=Outliers.unique()[~np.isnan(Outliers.unique())]
+pp.pprint(argdict_current)
+pp.pprint(Outliers)
+pp.pprint(SampleDF.loc[SampleDF['EmployeeID'].isin(Outliers)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
 #pp.pprint(SampleDF['TimeIn'].mode().mean().round(1))
 #pp.pprint(SampleDF['TimeIn'])
 # For all
