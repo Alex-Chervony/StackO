@@ -1,0 +1,51 @@
+I'm not sure whether you are looking for a Gantt Chart. If so, your hints by @Vinícius Aguiar, are in the comments.
+
+From your last line 
+
+> I have to find number of users in a specifc hours
+
+It seems you need a histogram showing user amount (freqeuncy) pivoted by hour of day.
+If that is the case, you can do something like this:
+
+    #! /usr/bin/python3
+    
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    import numpy as np
+    
+    # Read the data
+    df=pd.read_csv("data.csv")
+    
+    # Get all hours per user (per observation)
+    def sum_hours(obs):
+    	return(list(range(obs['hour_s'],obs['hour_e']+1,1)))
+    
+    # Get all existing activity hours (No matter which user)
+    Hours2D=list(df.apply(sum_hours,axis=1))
+    # Get all existing hours
+    HoursFlat=[hour for sublist in Hours2D for hour in sublist]
+    
+    # See the list to validate
+    # import pprint
+    # pp = pprint.PrettyPrinter(indent=4)
+    # See the 2 dim list, where each row is user's hours, to validate
+    # pp.pprint(HoursFlat)
+    
+    plt.hist(HoursFlat,rwidth=0.5,range=(0,24))
+    plt.xticks(np.arange(0,24, 1.0))
+    plt.xlabel('Hour of day')
+    plt.ylabel('Users')
+    plt.show()
+
+Where data.csv is the sample you provided:
+
+    uid, sex,start,end,hour_s,hour_e
+    1,0,2000-01-28 16:47:00,2000-01-28 17:47:00,16,17
+    2,1,2000-01-28 18:07:00,2000-01-28 21:47:00,18,21
+    3,1,2000-01-28 18:47:00,2000-01-28 20:17:00,18,20
+    4,0,2000-01-28 08:00:00,2000-01-28 10:00:00,08,10
+    5,1,2000-01-28 02:05:00,2000-01-28 02:30:00,02,02
+    6,0,2000-01-28 15:10:00,2000-01-28 18:04:00,15,18
+    7,0,2000-01-28 01:50:00,2000-01-28 03:00:00,01,03
+
+ You should get the following graph:
