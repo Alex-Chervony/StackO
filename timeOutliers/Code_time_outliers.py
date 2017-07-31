@@ -40,43 +40,48 @@ plt.ylabel('Arrival / Departure Time Frequency')
 
 # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data 
 OutlierSensitivity=0.05 # Will catch extreme events that happen 5% of the time. - one sided! i.e. only late arrivals and early departures.
+presetPercentile=scipy.stats.norm.ppf(1-OutlierSensitivity)
 
-# Identify one sided outlier: only late arrivals and early departures.
-def detect_outlier(obs,argdict):
-	#ExpIn,ExpOut,sigIn,sigOut,percentile
-	# If Time In is later than expected + 95%
-	if ((obs['TimeIn']>argdict['ExpIn']+argdict['percentile']*argdict['sigIn']) 
-	# If Time Out is earlier than expected - 95%
-		or (obs['TimeOut']<argdict['ExpOut']-argdict['percentile']*argdict['sigOut'])):
-		return(obs['EmployeeID'])
 
 # Use mode - (common number) + 95% percentile of the normal distribution:
-#ExpectedTimeIn=SampleDF['TimeIn'].mode().mean().round(1)
-#ExpectedTimeOut=SampleDF['TimeOut'].mode().mean().round(1)
-argdict_current={
+argdictOverall={
 	"ExpIn":SampleDF['TimeIn'].mode().mean().round(1)
 	,"ExpOut":SampleDF['TimeOut'].mode().mean().round(1)
 	,"sigIn":SampleDF['TimeIn'].var()
 	,"sigOut":SampleDF['TimeOut'].var()
-	,"percentile":scipy.stats.norm.ppf(1-OutlierSensitivity)
+	,"percentile":presetPercentile
 }
-OutlierIn=argdict_current['ExpIn']+argdict_current['percentile']*argdict_current['sigIn']
-OutlierOut=argdict_current['ExpOut']-argdict_current['percentile']*argdict_current['sigOut']
-#print(OutlierIn)
-#print(OutlierOut)
-
-# See distributions' features.
-pp.pprint(argdict_current)
+OutlierIn=argdictOverall['ExpIn']+argdictOverall['percentile']*argdictOverall['sigIn']
+OutlierOut=argdictOverall['ExpOut']-argdictOverall['percentile']*argdictOverall['sigOut']
 
 # For all
-# See all users with outliers
-Outliers=SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1)
-# Sort and remove NAs
-Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
-# Show users with overall outliers:
-#pp.pprint(Outliers)
+# See all users with outliers - overall
+Outliers=SampleDF["EmployeeID"].loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)]
 
 # See all observations with outliers - Overall
 # pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)].sort_values(["EmployeeID"]))
 
 # For each
+OutliersForEach=[]
+for Employee in SampleDF['EmployeeID'].unique():
+	#print(Employee)
+	SampleDFCurrent=SampleDF.loc[SampleDF['EmployeeID']==Employee]
+	argdictCurrent={
+		"ExpIn":SampleDFCurrent['TimeIn'].mode().mean().round(1)
+		,"ExpOut":SampleDFCurrent['TimeOut'].mode().mean().round(1)
+		,"sigIn":SampleDFCurrent['TimeIn'].var()
+		,"sigOut":SampleDFCurrent['TimeOut'].var()
+		,"percentile":presetPercentile
+	}
+	OutlierIn=argdictCurrent['ExpIn']+argdictCurrent['percentile']*argdictCurrent['sigIn']
+	OutlierOut=argdictCurrent['ExpOut']-argdictCurrent['percentile']*argdictCurrent['sigOut']
+	if SampleDFCurrent['TimeIn'].max()>OutlierIn or SampleDFCurrent['TimeOut'].min()<OutlierOut:
+		Outliers=np.append(Outliers,Employee)
+	#Outliers=np.append(Outliers,SampleDF["EmployeeID"].loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)])
+	#pp.pprint(argdictCurrent)
+
+# Sort and remove NAs
+Outliers=np.sort(np.unique(Outliers))
+#Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
+# Show users with overall outliers:
+pp.pprint(Outliers)
