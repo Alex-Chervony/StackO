@@ -1,6 +1,5 @@
 #! /usr/bin/python3
 
-
 import random
 import pandas as pd
 import numpy as np
@@ -28,14 +27,14 @@ SampleDF=pd.DataFrame([
 SampleDF.columns = ['EmployeeID', 'TimeIn','TimeOut']
 
 # Show Time distributions
-pp.pprint(SampleDF)
+#pp.pprint(SampleDF)
 
 plt.hist(SampleDF['TimeIn'],rwidth=0.5,range=(0,24))
 plt.hist(SampleDF['TimeOut'],rwidth=0.5,range=(0,24))
 plt.xticks(np.arange(0,24, 1.0))
 plt.xlabel('Hour of day')
 plt.ylabel('Arrival / Departure Time Frequency')
-plt.show()
+#plt.show()
 #Create Sample Data #Create Sample Data #Create Sample Data #Create Sample Data 
 
 # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data 
@@ -51,7 +50,9 @@ def detect_outlier(obs,ExpIn,ExpOut,sigIn,sigOut,percentile):
 		return(obs['EmployeeID'])
 
 # Use mode - (common number) + 95% percentile of the normal distribution:
-pp.pprint(SampleDF.mode())
+ExpectedTimeIn=SampleDF['TimeIn'].mode().mean().round(1)
+ExpectedTimeOut=SampleDF['TimeOut'].mode().mean().round(1)
+#pp.pprint(SampleDF['TimeIn'].mode().mean().round(1))
 #pp.pprint(SampleDF['TimeIn'])
 # For all
 # For each
