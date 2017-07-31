@@ -62,17 +62,21 @@ argdict_current={
 }
 OutlierIn=argdict_current['ExpIn']+argdict_current['percentile']*argdict_current['sigIn']
 OutlierOut=argdict_current['ExpOut']-argdict_current['percentile']*argdict_current['sigOut']
-print(OutlierIn)
-print(OutlierOut)
-#pp.pprint(SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1))
-Outliers=SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1)
-Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
+#print(OutlierIn)
+#print(OutlierOut)
+
+# See distributions' features.
 pp.pprint(argdict_current)
-pp.pprint(Outliers)
-#pp.pprint(SampleDF.loc[SampleDF['EmployeeID'].isin(Outliers)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
-#pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) or (SampleDF['TimeOut']<OutlierOut)].sort_values(["TimeIn","TimeOut"],ascending=[0,1]))
-pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)].sort_values(["EmployeeID"]))
-#pp.pprint(SampleDF['TimeIn'].mode().mean().round(1))
-#pp.pprint(SampleDF['TimeIn'])
+
 # For all
+# See all users with outliers
+Outliers=SampleDF.apply(detect_outlier,argdict=argdict_current,axis=1)
+# Sort and remove NAs
+Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
+# Show users with overall outliers:
+#pp.pprint(Outliers)
+
+# See all observations with outliers - Overall
+# pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)].sort_values(["EmployeeID"]))
+
 # For each
