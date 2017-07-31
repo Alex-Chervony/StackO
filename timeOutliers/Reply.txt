@@ -1,0 +1,26 @@
+If I understand correctly, you are looking to identify people who depart extremely early or arrive extremely late compared to their own and overall norms.
+
+ 1. The first issue you encountered seems related to tagging outliers that deviate by Z x (standard deviation) late or early. You usually have control whether the outliers are on one both sides
+ 2. The second issue has to do with mean being biased or unstable with a small sample.
+    Unless you know the outlier thresholds ahead of time, you will need a healthy sample to identify outliers in any case. If mean does not zero in quick enough to the common, and
+    you seek the common value, use Mode instead of mean.
+
+Also, I would suggest looking at the daily hours - difference between arrival and departure each day as a separate metric.
+
+Below I have a directional approach / suggestion to tackle your problem, python3 (sorry).   
+It should address the issues you mentioned but does not add the daily hours I think you should include. 
+
+This is the output you can expect:
+
+	Outlier PersonIDs based on overall data
+	array([ 1.,  4.,  7.,  8.])
+	Outlier PersonIDs based on each user's data and overall deviation
+	array([ 1.,  3.,  4.,  5.,  7.,  8.,  9.])
+	
+This is the daily arrival and departure time distributions:
+[![enter image description here][1]][1]
+
+Here's the code:
+
+
+  [1]: https://i.stack.imgur.com/GKwiN.png
