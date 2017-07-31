@@ -16,10 +16,11 @@ import matplotlib.pyplot as plt
 TimeInExpected=8.5 # 8:30am
 TimeOutExpected=17 # 5pm
 sig=1 # 1 hour variance
-Employees=10
-SampleSize=500
+Employees=11
+SampleSize=20
 Accuracy=1 # Each hour is segmented by hour tenth (6 minutes)
 
+# Generate sample
 SampleDF=pd.DataFrame([
 	np.random.randint(1,Employees,size=(SampleSize)),
 	np.around(np.random.normal(TimeInExpected, sig,size=(SampleSize)),Accuracy),
@@ -35,7 +36,7 @@ plt.hist(SampleDF['TimeOut'],rwidth=0.5,range=(0,24))
 plt.xticks(np.arange(0,24, 1.0))
 plt.xlabel('Hour of day')
 plt.ylabel('Arrival / Departure Time Frequency')
-#plt.show()
+plt.show()
 #Create Sample Data #Create Sample Data #Create Sample Data #Create Sample Data 
 
 # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data # Analyze data 
@@ -61,6 +62,12 @@ Outliers=SampleDF["EmployeeID"].loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['
 # See all observations with outliers - Overall
 # pp.pprint(SampleDF.loc[(SampleDF['TimeIn']>OutlierIn) | (SampleDF['TimeOut']<OutlierOut)].sort_values(["EmployeeID"]))
 
+# Sort and remove NAs
+Outliers=np.sort(np.unique(Outliers))
+# Show users with overall outliers:
+print("Otliers based on overall data")
+pp.pprint(Outliers)
+
 # For each
 OutliersForEach=[]
 for Employee in SampleDF['EmployeeID'].unique():
@@ -82,6 +89,6 @@ for Employee in SampleDF['EmployeeID'].unique():
 
 # Sort and remove NAs
 Outliers=np.sort(np.unique(Outliers))
-#Outliers=np.sort(Outliers.unique()[~np.isnan(Outliers.unique())])
 # Show users with overall outliers:
+print("Otliers based on each user's data and overall deviation")
 pp.pprint(Outliers)
