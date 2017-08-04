@@ -1,0 +1,28 @@
+Here's a sample approach:   
+I assume that you are collecting speed continuously.
+
+Deceleration and Acceleration are measured as velocity/second^2 and you can calculate them.
+
+You can calculate the distribution of:   
+
+ - Median Velocity range (discrete)
+ - Median drive length range in hours (discrete)  
+ - Deceleration and Acceleration maxima over all users and identify 'Danger Zones' as 96% outliers, aka average plus minus 2*standard deviations. 
+
+Let's say you compute 4 dimensions for each driver (Don't get hung up on the names, they are only somewhat relevant to the metric):
+
+- Caution - The amount of times the driver has crossed into the danger zone in Deceleration
+* Risk - The amount of times the driver has crossed into the danger zone in Acceleration
+* Rush - The amount of times the driver has crossed into the danger zone in Velocity
+* Stamina - The amount of times the driver has crossed (to the right) into the danger zone in median drive length range. 
+
+After you collect these metrics (You can extrapolate to more, of-course) you can, for example, run clustering.
+
+After you did that, and you have the drivers clustered by behaviour, you can either overlay actual data (if exists) and see which cluster is made up of more accident ridden drivers or cycle back and run supervised learning. Or assess the cluster features (E.g. Extremely high Rush and risk statistics would describe unsafe behaviour)
+
+You can skip calculating the distributions and outliers all together and just use the raw aggregated (medians, maxima) metrics to cluster. You'll avoid losing sensitivity as a result of the discrete condition, but it might cause issues with extreme outliers. There are methods to tend to that as well.
+
+I propose clustering that takes care of the cluster amount calculation by itself, like Hierarchical clustering / affinity propagation or k-means where you recalculate clusters using the elbow method. You should choose one by your performance demands. 
+
+Contrary, or in addition, you can run outlier detection to identify drivers extreme in behaviour:
+Identify the centre of all drivers by the set dimensions, then calculate the distances distribution. Then note drivers with distances from the centre above a threshold that makes sense. This will promise you will identify behaviours not caught by the clusters.

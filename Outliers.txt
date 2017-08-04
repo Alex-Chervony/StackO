@@ -1,0 +1,30 @@
+One way is keeping additional metrics for each observation:  
+For Bytes_recieved:  
+ 
+ - An indicator of whether the observation is an outlier. This will be
+   decided by whether the observed Bytes_recieved are outside of the
+   last observed average plus, minus the last observed SD as described
+   below.
+ - A running average over the last N non outlying events. 
+ - Standard deviation over the last N non outlying events. 
+
+N will be based on the amount of observation you want to consider. You mentioned recent days, so  you could set `N = "recent" * average events per day` 
+
+E.g:  
+  
+	 EMPID date      Bytes_sent  Bytes_recieved  br-avg-last-N  br-sd-last-N  br-Outlier
+	 A123  Timestamp 222222      3333333         3333333        2357022.368  FALSE
+	 A123  Timestamp 444444      6666666         4999999.5      2356922.368  FALSE
+	 A123  Timestamp 99999999    88888888888     N/A            N/A          TRUE
+
+Bytes_recieved Outlier for row three is calculated as whether the observed Bytes_recieved is outside the range defined by:
+
+    (last Bytes_recieved Average-Last-10) - 2*(last Bytes_recieved SD-Last-N) And (last Bytes_recieved Average-Last-10) + 2*(last Bytes_recieved SD-Last-N)
+	4999999.5 + 2 * 2356922.368 = 9713844.236; 9,713,844.236 < 88,888,888,888 -> TRUE
+
+2 Standard deviations will give you 96% outliers, i.e. extreme observations you will only see ~4% of the time. You can modify it to your needs.
+
+You can either do the same for Bytes_sent and have an 'Or' condition for the outlier decision, or calculate distance from a multi dimensional running average (here X is Bytes_sent and Y is Bytes_recieved) and mark outliers based on extreme distances. (You'll need to track a running SD or another spread metric per observation)   
+This way you could also easily add dimensions: time of day anomalies, extreme differences between Bytes_sent and Bytes_recieved etc.
+
+
